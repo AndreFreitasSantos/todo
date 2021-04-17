@@ -1,7 +1,6 @@
 
 
 const coluns = document.querySelectorAll(".colun")
-let key
 
 function addTodo(text,pai){
     let todo = document.createElement("input");
