@@ -42,14 +42,16 @@ table{
     outline: none;
 }
 
-.colun{
+.container{
     display: inline-block;
     width: 300px;
-    height: 100px;
+    height: 500px;
     margin: 40px;
-    padding-bottom: 400px;
 }
 
+.colun{
+    height: 100%;
+}
 
 .todo{
     background-color: #333333;
@@ -58,7 +60,6 @@ table{
     margin-bottom: 20px;
     width: 250px;
     display: block;
-    border-radius: 5px;
     cursor: pointer;
 }
 
@@ -67,6 +68,8 @@ table{
 }
 
 .todo.dragging {
+    outline: 0;
+    cursor: move;  
     opacity: 0.5;
 }
 
@@ -76,3 +79,12 @@ table{
     padding: 10px;
 }
 
+.mark{
+    background-color: #5229e6;
+    height: 5px;
+    padding: 0px 20px;
+    margin-bottom: 10px;
+    width: 250px;
+    display: block;
+    cursor: pointer;
+}

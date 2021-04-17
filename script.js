@@ -1,167 +1,94 @@
 
-var coluns = document.querySelectorAll(".colun");
 
-class Bd{
+const coluns = document.querySelectorAll(".colun")
+let key
 
-    constructor(){
-        let id = localStorage.getItem('id')
-        if(id === null){
-            localStorage.setItem('id', 0)
-        }
-    }
+function addTodo(text,pai){
+    let todo = document.createElement("input");
+    todo.setAttribute("draggable","true");
+    todo.classList.add("todo")
+    todo.value = text
 
-    getProximoId() {
-        let proximoId = localStorage.getItem('id')
-        return(parseInt(proximoId)+1)
-    }
+    todo.addEventListener("focusin", () => {
+        todo.setAttribute("readonly", "true")
+    })
 
-    gravar(a){
-        let id = this.getProximoId()
-        localStorage.setItem(id,JSON.stringify(a))
-        localStorage.setItem('id',id) 
-        return id
-    }
+    todo.addEventListener("dblclick", () => {
+        todo.removeAttribute("readonly")
+    })
 
-    substituir(id, a){
-        let obj = localStorage.getItem(id)
-        let newObj = new Todo(a)
-        obj = newObj
-        localStorage.setItem(id,JSON.stringify(obj))
-    }
+    todo.addEventListener("focusout", () => {
+        save()
+    })
 
-    RecuperarValores(){
+    todo.addEventListener("dragstart", () => {
+        todo.classList.add("dragging");
+    })
 
-        let todos = Array()
+    todo.addEventListener("dragend", () => {
+        save()
+        todo.classList.remove("dragging")
+    })
 
-        let id = localStorage.getItem('id')
-
-        for (let i = 1; i <= id; i++) {
-            let todo = localStorage.getItem(i)
-            
-            if(todo === null){
-                continue
-            }
-
-            todos.push(todo)
-        }
-        return todos
-    }
-}
-
-let bd = new Bd()
-
-
-class Todo{
-    constructor(text, colun){
-        this.text = text
-        this.colun = colun
-    }
-}
-
-
-function add(){
-    const todoColun = document.querySelector("#todo-title");
-    const newtodo = document.createElement('input');
-    newtodo.setAttribute("draggable", "true")
-    newtodo.classList.add('todo')
-    todoColun.insertAdjacentElement('afterend',newtodo)
-    let position = 1;
-    let colun = "todo-colun";
-    newtodo.setAttribute('id',position)
+    let colun = document.getElementById(pai)
     
-    atualizar(position,colun);
-
-    container = new Array ()
-    container.push(newtodo);
-    events(container)
-    let containers = new Todo(newtodo.value, todoColun)
-    id = bd.gravar(containers)
-    newtodo.setAttribute('id', id)
-
-}
-
-function atualizar(id,colun){
-    todo = document.getElementById(id.toString());
-    console.log(todo)
-    if(todo !== null){
-        id_todo = parseInt(todo.getAttribute('id'));
-        id_todo += 1;
-        todo.setAttribute('id',id_todo);
+    if(colun.childNodes.length == 0){
+        colun.appendChild(todo)
+    }else{
+        colun.insertBefore(todo ,colun.childNodes[0]) 
     }
 }
 
-function carregarTodos(){
-    let todos = Array()
-
-    todos = bd.RecuperarValores()
-
-    todos.forEach(todos => {
-        console.log(todos)
-        const newtodo = document.createElement('input');
-        newtodo.setAttribute("draggable", "true")
-        newtodo.classList.add('todo')
-        let todo = JSON.parse(todos)
-        newtodo.setAttribute('value',todo.text)
-        todoColun.insertAdjacentElement('afterend',newtodo)
-        container = new Array ()
-        container.push(newtodo);
-        events(container)
+coluns.forEach(colun => {
+    colun.addEventListener('dragover', e => {
+        const afterElement = getDragAfterElement(colun, e.clientY)
+        const draggable = document.querySelector('.dragging')
+        if(afterElement == null) {
+            colun.appendChild(draggable)
+        }else{
+            colun.insertBefore(draggable,afterElement)
+        }
     })
+})
+
+function getDragAfterElement(container, y){
+    const draggableElements = [...container.querySelectorAll('.todo')]
+
+    return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect()
+        const offset = y - box.top  - box.height/2
+        if(offset < 0 && offset > closest.offset){
+            return { element: child }
+        }else{
+            return closest
+        }
+
+        }, {offset: Number.NEGATIVE_INFINITY}).element   
 }
 
 
-function events(containers){
+function save(){
+    let todos = document.querySelectorAll('.todo');
+    let i = 0
 
-    containers.forEach(container => {
-        container.addEventListener('dragstart', () => {
-            container.classList.add('dragging')
-        })
-
-        container.addEventListener('dragend', () => {
-            container.classList.remove('dragging')
-        })
-
-        container.addEventListener('dblclick', () => {
-            container.removeAttribute('readonly')
-        })
-
-        container.addEventListener('focusin', () => {
-            container.setAttribute('readonly', 'true')
-        })
-
-        container.addEventListener('focusout', () => {
-            container.setAttribute('readonly', 'true')
-            id = container.getAttribute('id')
-            bd.substituir(id ,container.value)
-        })
+    todos.forEach(todo => {
+        var todo = {
+            text: todo.value,
+            pai: todo.parentNode.id
+        }
+        localStorage.setItem(i,JSON.stringify(todo))
+        i++
     })
 
-    coluns.forEach(colun => {
-        colun.addEventListener('dragover', e => {
-            e.preventDefault()
-            const afterElement = getDragAfterElement(colun, e.clientY)
-            const draggable = document.querySelector('.dragging')
-            if(afterElement == null) {
-                colun.appendChild(draggable)
-            }else{
-                colun.insertBefore(draggable,afterElement)
-            }
-        })
-    })
+    key = i
+}
 
-    function getDragAfterElement(container, y){
-        const draggableElements = [...container.querySelectorAll('.todo:not(.dragging)')]
+function load(){
+    for(let i = localStorage.length-1; i>=0; i--){
+        console.log(i)
+        todo = JSON.parse(localStorage.getItem(i))   
+        text = todo.text 
+        addTodo(text, todo.pai)
 
-        return draggableElements.reduce((closest, child) => {
-            const box = child.getBoundingClientRect()
-            const offset = y - box.top - box.height / 2
-            if(offset < 0 && offset > closest.offset){
-                return { offsset: offset, element: child }
-            }else{
-                return closest
-            }
-
-            } , {offset: Number.NEGATIVE_INFINITY}).element   
     }
 }
-

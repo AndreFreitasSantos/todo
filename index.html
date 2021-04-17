@@ -7,18 +7,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>To Do</title>
 </head>
-<body onload="carregarTodos()">
+<body onload="load()">
+    <div id="loading" style="display: block">
+        
+    </div>
+
     <table>
-        <th class="colun" id="todo-colun">
-            <div class="title" id="todo-title">To do<button id="add" onclick="add()">+</button></div>
+        <th id = "todo-container" class="container">
+            <div class="title" id="todo-title">To do<button id="add" onclick="addTodo('','todo-colun'); save()">+</button></div>
+            <div id="todo-colun" class="colun"></div>
         </th>
 
-        <th class="colun">
+        <th id = "doing-container"class="container">
             <div class="title">Doing</div>
+            <div id="doing-colun" class="colun"></div>
         </th>
     
-        <th class="colun"> 
+        <th id = "done-container" class="container"> 
             <div class="title">Done</div>
+            <div id="done-colun" class="colun"></div>
         </th>
     </table>
     <script src="script.js"></script>
