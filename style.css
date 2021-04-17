@@ -85,13 +85,3 @@ body{
     margin-bottom: 20px;
     width: 290px;
 }
-
-.mark{
-    background-color: #5229e6;
-    height: 5px;
-    padding: 0px 20px;
-    margin-bottom: 10px;
-    width: 250px;
-    display: block;
-    cursor: pointer;
-}
